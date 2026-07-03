@@ -1,109 +1,70 @@
-# AI Chatbot API
+# FastAPI Chatbot with Redis
 
-minimalist AI chatbot API built with FastAPI, LangChain, OpenAI, and Redis. It supports session-based temporary memory and automatic tool calling without overengineered frameworks.
+## Prerequisites
 
-## Features
+- Docker
+- Docker Compose
 
-- **Session-Based Memory**: Conversations are stored in Redis with an automatic 5-minute (300 seconds) TTL.
-- **Tool Calling**: The LLM autonomously decides when to use tools.
-- **Available Tools**:
-  - **Calculator**: Performs basic math operations (+, -, *, /).
-  - **Current Date & Time**: Fetches the current datetime.
-  - **Web Search**: Searches the web using DuckDuckGo.
+## Setup
 
-## Project Structure
-
-```
-app/
-  config/
-    settings.py
-  prompts/
-    chat_prompt.py
-  services/
-    chatbot.py
-  tools/
-    calculator.py
-    datetime_tool.py
-    web_search.py
-  main.py
-.env.example
-requirements.txt
-README.md
-```
-
-## Installation
-
-1. Clone the repository and navigate to the project directory.
-2. Create a virtual environment and activate it:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Environment Variables
-
-Copy the `.env.example` file to `.env` and configure your variables:
+1. Clone the repository:
 
 ```bash
-cp .env.example .env
+git clone <repository-url>
+cd chat
 ```
 
-Edit `.env`:
+2. Create a `.env` file:
+
 ```env
-OPENAI_API_KEY=your_openai_api_key_here
-REDIS_URL=redis://localhost:6379/0
+OPENAI_API_KEY=your_openai_api_key
+REDIS_URL=redis://redis:6379/0
 ```
 
-## How to Run Redis
+## Run the Application
 
-If you have Docker installed, you can easily run a Redis instance:
+Build and start the containers:
 
 ```bash
-docker run -d --name redis-stack -p 6379:6379 redis/redis-stack-server:latest
+docker compose up --build
 ```
-*(Alternatively, you can install Redis directly on your machine or use a managed Redis service).*
 
-## How to Run FastAPI
-
-Run the FastAPI server using Uvicorn:
+Run in detached mode:
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+docker compose up -d
 ```
 
-## Example API Request
+## API Documentation
+
+Open Swagger UI:
+
+```
+http://localhost:8000/docs
+```
+
+## Stop the Application
 
 ```bash
-curl -X POST http://localhost:8000/chat \
-     -H "Content-Type: application/json" \
-     -d '{
-           "session_id": "user_123",
-           "message": "What is 25 + 18?"
-         }'
+docker compose down
 ```
 
-## Example API Response
+## Check Running Containers
 
-```json
-{
-  "response": "25 + 18 is 43."
-}
+```bash
+docker ps
 ```
 
-## How Memory Works
+## View Logs
 
-The application uses `RedisChatMessageHistory` from the `langchain-redis` package to maintain short-term conversational context.
-- Each unique `session_id` maps to a distinct conversation thread in Redis.
-- A Time-To-Live (TTL) of 300 seconds (5 minutes) is enforced automatically.
-- If a user interacts within 5 minutes, the history remains active. After 5 minutes of inactivity, Redis automatically purges the memory for that session.
+Application:
 
-## How Tool Calling Works
+```bash
+docker logs -f chat-app
+```
 
-The chatbot uses modern LangChain tool calling (`bind_tools`). We avoid complex agent frameworks (like LangGraph or AgentExecutor) to keep the backend lightweight and readable.
-- The user's input is passed to the language model.
-- If the model decides a tool is necessary, it returns a `tool_calls` payload.
-- Our service iteratively executes the invoked tools and feeds the results back to the model as `ToolMessage`s until the model issues a final response.
+Redis:
+
+```bash
+docker logs -f chat-redis
+```
