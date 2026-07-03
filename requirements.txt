@@ -2,6 +2,8 @@ fastapi
 uvicorn
 python-dotenv
 langchain
+langchain-community
 langchain-openai
 langchain-redis
+duckduckgo-search
 ddgs

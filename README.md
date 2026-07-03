@@ -1,6 +1,6 @@
 # AI Chatbot API
 
-A production-ready, minimalist AI chatbot API built with FastAPI, LangChain, OpenAI, and Redis. It supports session-based temporary memory and automatic tool calling without overengineered frameworks.
+minimalist AI chatbot API built with FastAPI, LangChain, OpenAI, and Redis. It supports session-based temporary memory and automatic tool calling without overengineered frameworks.
 
 ## Features
 

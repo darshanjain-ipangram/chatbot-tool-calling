@@ -1,0 +1,31 @@
+services:
+
+  redis:
+    image: redis:7-alpine
+    container_name: chat-redis
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - redis_data:/data
+
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: chat-app
+
+    env_file:
+      - .env
+
+    depends_on:
+      - redis
+
+    ports:
+      - "8000:8000"
+
+    restart: unless-stopped
+
+volumes:
+  redis_data:
